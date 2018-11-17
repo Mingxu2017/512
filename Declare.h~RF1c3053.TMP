@@ -1,0 +1,497 @@
+#ifndef __Declare_H
+#define __Declare_H
+
+#define Max_Uart 8
+
+#define MaxBuf 25
+#define MaxErr 3 
+
+#define MaxEndAddr 512
+#define Key_Addr 64
+#define Dis_T 0x0c//文字显示方式
+#define Dis_P 0x04//绘图显示方式
+#define WDOG() {GPIOE->ODR^=0x00000400;IWDG_ReloadCounter();}//PC0
+
+#define RS485_TX_EN_0		GPIO_ResetBits(GPIOE,GPIO_Pin_2)	//485模式控制.0,接收;1,发送.
+#define RS485_TX_EN_1		GPIO_SetBits(GPIOE,GPIO_Pin_2)
+//显示屏REQ=PC11;Busy=PC10;RST=PA15;
+//#define REQ_1()  GPIO_SetBits(GPIOC,GPIO_Pin_6) 
+//#define REQ_0()  GPIO_ResetBits(GPIOC,GPIO_Pin_6) 
+
+//翠绿测试屏
+#define Back_Led_ON()  GPIO_SetBits(GPIOC,GPIO_Pin_8) 
+#define Back_Led_OFF() GPIO_ResetBits(GPIOC,GPIO_Pin_8)
+
+//#define Busy_1()  GPIO_SetBits(GPIOB,GPIO_Pin_15) 
+//#define Busy_0()  GPIO_ResetBits(GPIOB,GPIO_Pin_15)
+
+#define RST_1()  GPIO_SetBits(GPIOD,GPIO_Pin_8) 
+#define RST_0()  GPIO_ResetBits(GPIOD,GPIO_Pin_8)
+
+#define WR_0() GPIO_ResetBits(GPIOB,GPIO_Pin_12) 
+#define WR_1() GPIO_SetBits(GPIOB,GPIO_Pin_12)
+//BUSY
+#define A0_0() GPIO_ResetBits(GPIOB,GPIO_Pin_15) //RS 数据地址
+#define A0_1() GPIO_SetBits(GPIOB,GPIO_Pin_15)
+
+#define RS_0() GPIO_ResetBits(GPIOB,GPIO_Pin_15) //ce 片选信号  程序里边AO功能
+#define RS_1() GPIO_SetBits(GPIOB,GPIO_Pin_15)
+
+#define RD_0() GPIO_ResetBits(GPIOB,GPIO_Pin_13) 
+#define RD_1() GPIO_SetBits(GPIOB,GPIO_Pin_13)
+	
+#define CS1_0() GPIO_ResetBits(GPIOB,GPIO_Pin_14) 	//CE 片选信号
+#define CS1_1() GPIO_SetBits(GPIOB,GPIO_Pin_14)
+
+#define CE_0() GPIO_ResetBits(GPIOB,GPIO_Pin_14) 	//CE 片选信号
+#define CE_1() GPIO_SetBits(GPIOB,GPIO_Pin_14)
+
+//指示灯
+#define SDA_dis_1() GPIO_SetBits(GPIOE,GPIO_Pin_11) //E11
+#define SDA_dis_0() GPIO_ResetBits(GPIOE,GPIO_Pin_11) 
+#define SCLK_dis_1() GPIO_SetBits(GPIOE,GPIO_Pin_12) 	//E12
+#define SCLK_dis_0() GPIO_ResetBits(GPIOE,GPIO_Pin_12) 
+#define DIS_ON() GPIO_SetBits(GPIOE,GPIO_Pin_13) 			//E13
+#define DIS_OFF() GPIO_ResetBits(GPIOE,GPIO_Pin_13) 
+
+#define TREN_KEY_ON()   GPIO_SetBits(GPIOA,GPIO_Pin_1) //PA1
+#define TREN_KEY_OFF()  GPIO_ResetBits(GPIOA,GPIO_Pin_1)
+
+#define TREN_PC_ON() GPIO_SetBits(GPIOE,GPIO_Pin_15)
+#define TREN_PC_OFF() GPIO_ResetBits(GPIOE,GPIO_Pin_15)
+
+#define Power_LED_ON()   GPIO_ResetBits(GPIOE,GPIO_Pin_14) //PE14
+#define Power_LED_OFF()  GPIO_SetBits(GPIOE,GPIO_Pin_14)
+
+#define Beep_ON()  GPIO_ResetBits(GPIOB,GPIO_Pin_1) 
+#define Beep_OFF() GPIO_SetBits(GPIOB,GPIO_Pin_1)
+
+#define Speak_ON()  GPIO_SetBits(GPIOB,GPIO_Pin_0)
+#define Speak_OFF() GPIO_ResetBits(GPIOB,GPIO_Pin_0) 
+
+#define KC1_ON()  GPIO_ResetBits(GPIOD,GPIO_Pin_3)
+#define KC1_OFF() GPIO_SetBits(GPIOD,GPIO_Pin_3)
+#define KC2_ON()  GPIO_ResetBits(GPIOD,GPIO_Pin_4)
+#define KC2_OFF() GPIO_SetBits(GPIOD,GPIO_Pin_4)
+#define TCQ_Power_ON() GPIO_ResetBits(GPIOD,GPIO_Pin_5) 
+#define TCQ_Power_OFF() GPIO_SetBits(GPIOD,GPIO_Pin_5)
+
+#define CDK_ON()  GPIO_ResetBits(GPIOD,GPIO_Pin_7) 
+#define CDK_OFF() GPIO_SetBits(GPIOD,GPIO_Pin_7) 
+
+#define BD_ON()  GPIO_ResetBits(GPIOD,GPIO_Pin_6) 
+#define BD_OFF() GPIO_SetBits(GPIOD,GPIO_Pin_6)
+
+#define KSC_Check() GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_8)
+
+//CAN接收发送结构体定义
+
+typedef struct
+{
+	uint8_t Command;
+	uint8_t TCQ_Num;
+	uint8_t TDH;
+	uint8_t type;
+}T_SendFunction;
+extern T_SendFunction SendFunction[16];
+extern uint8_t PC_AN_Flag;
+typedef struct
+{
+	unsigned SendCnt: 4;
+	unsigned LoadCnt : 4;
+	unsigned cs_wr:	4;
+	unsigned cs_rd:	4;
+}T_SendPtr;
+extern T_SendPtr SendPtr;
+
+typedef  struct 
+{      
+    uint16_t     sec;    //senconds after the minute, 0 to 59
+    uint16_t     min;    //minutes after the hour, 0 to 59
+    uint16_t     hour;   //hours since midnight, 0 to 23
+    uint16_t     day;   //day of the month, 1 to 31
+    uint16_t     month;  //months of the year, 1 to 12
+    uint16_t     year;   //years, START_YEAR to START_YEAR+135
+    uint16_t     wday;   //days since Sunday, 0 to 6
+    uint16_t     yday;   //days of the year, 1 to 366
+}T_Struct;
+extern T_Struct Real_Time;//时间结构体变量
+
+typedef  struct 
+{      
+    uint16_t    LCDBack_Timer;   //背光延时
+    uint8_t     SBack_Timer;    //反馈延时
+    uint8_t     Fault_Timer;  //故障延时
+    uint8_t     AutoFire;      //火灾自动联动
+    uint8_t     AutoPrint;  //自动打印
+    uint8_t     AlarmS_Flag; //报警声音
+    uint8_t     FaultS_Flag;   //故障声音
+    uint8_t     Bat_ON_Flag;   //备电检测
+}T_Struct1;
+extern T_Struct1 System;//
+extern uint8_t SuperPassFlag;
+extern uint8_t DateTimer[8];   // 依次为：  年月日周时分秒，输出控制
+extern uint8_t ReadTimer_OK;
+
+#define ADC_COUNT 16 //每通道采50次
+#define ADC_Chanel 1 //为12个通道
+extern uint16_t AD_Value[ADC_COUNT][ADC_Chanel]; //用来存放ADC转换结果，也是DMA的目标地址
+extern uint32_t AD_Average[ADC_Chanel];
+extern uint8_t canflag;
+extern const uint8_t ChCode[];
+extern const uint8_t Hex[];
+extern uint8_t  dis_buff[30];
+
+
+
+extern uint16_t World_Flag;//系统状态指示灯标志
+extern uint8_t RS485_RX_BUF[256];  	//接收缓冲,最大64个字节.
+extern uint8_t ReceivePoint;
+extern uint8_t ReceiveFlag;
+extern uint8_t RS485_RX_BUF2[256];  	//接收缓冲,最大64个字节.
+extern uint8_t ReceivePoint2;
+extern uint8_t ReceiveFlag2;
+
+
+//接收到的数据长度
+//extern uint8_t RS485_RX_CNT;  
+
+
+extern uint8_t Function_Flag;
+
+extern CanTxMsg TxMessage;
+extern CanRxMsg RxMessage;
+extern uint8_t SendToPC_Flag;
+extern uint8_t Pass1[4],Pass2[4];//保存1级2级密码
+extern uint16_t AlarmRecount;
+extern uint16_t FaultRecount;
+extern uint16_t SDRecount;
+extern uint8_t Self_Addr;
+//extern uint8_t ShowFrq;//刷新频率，每屏显示的时间间隔
+
+extern uint16_t  PrintID;
+//extern uint8_t Bat_ON_Flag;;
+
+extern uint16_t First_Alarm;
+extern uint16_t FAlarm_Rec_Position;
+extern uint16_t Alarm_Rec_Position;//报警部位总数
+extern uint16_t XAlarm_Rec_Position;
+extern uint16_t Alarm_RecP;
+extern uint16_t Fault_Rec_Position;//故障部位总数
+extern uint16_t Fualt_Rec;
+extern uint16_t Fault_Num;
+extern uint8_t Dis_Alarm_Fault_Flag;//1显示报警　２显示故障
+//extern uint16_t Fault_RecP;
+extern uint8_t ARec_Position;//,FRec_Position;
+extern uint16_t RAlarm_Rec_Position;
+extern uint8_t Flash_Flag;
+extern uint8_t TestKey;
+extern uint8_t TestKey1;
+//extern uint16_t Zero[256];
+extern uint16_t Fac[256];
+extern uint8_t Fault_Position[21][8];
+
+extern uint16_t Shiled_Rec_Position;
+extern uint8_t Flicker_Timer;
+
+extern uint8_t Shield_Flag[64];//8..1路显示标志位　　=0显示，＝1屏蔽不显示
+extern uint8_t Fault_Flag[64];//总故障
+
+extern uint16_t Sensor_Fault0_Flag[512];
+
+extern uint8_t KEY_Uart_Fault_Flag;//按键板通讯故障
+
+extern uint8_t Alarm_Flag[64];
+/*
+extern uint8_t RAlarm_Flag[32];//=1接收反馈标识
+extern uint8_t XAlarm_Flag[32];//＝１未反馈标识
+extern uint8_t NXAlarm_Flag[32];*/
+//extern uint8_t DoorBackTimer[256];//反馈时间
+extern uint32_t address[512][3];
+extern uint8_t DisplayAddr;
+extern uint8_t DoorDelayTimer;//门延时启动
+extern uint8_t NOBack_Flag;//总的没有反馈标识
+extern uint8_t Uart_Err_Timer[256];
+
+//extern uint8_t SendNum[512];
+
+
+//extern uint16_t PB_State,Type_State,SKC_State;
+extern uint8_t LDK[2];
+extern uint8_t Door_Addr;
+
+
+
+extern uint8_t Timer50ms,Timer50ms1;//显示时间控制在1S
+extern uint16_t Back_Timer1S;
+
+extern uint8_t Dis_System_Timer,Dis_Feel_Timer,Uart_Timer,Beep_Timer,LEDTimer;
+extern uint16_t TCDID,State1,State2,temp1,temp2,Alarm_State,Fault_State;
+extern uint16_t End_Addr;
+extern uint16_t LoopStart;
+extern uint16_t LoopEnd;
+extern uint16_t TCQ_ID_CAN;
+extern uint16_t TCQ_ID_485;
+
+extern uint16_t Dis_Num;
+extern uint16_t TCQ_Addr;
+extern uint8_t DateTimer[8];
+
+
+extern uint8_t Uart_Timer;
+extern uint8_t LoopOpenFlag;
+
+
+extern uint16_t Bat_Power;
+extern uint8_t Sound_Flag;
+extern uint16_t Power_Check_Timer;
+extern uint8_t Bat_Low_Flag;
+extern uint8_t CD_Flag;//充电标志
+
+extern uint8_t  Key_Down_Flag;
+extern uint8_t  Key_Up_Flag;
+extern uint8_t  Dis_Key_Buff_Flag;//=1显示按銉操作信息
+extern uint16_t Key_Input_Value;
+extern uint8_t Flicker_Position,Flicker_Position1;//闪烁的位置
+extern uint8_t menu;
+extern uint8_t Beep_Alarm_Fault;//=1alarm;;=2fault
+extern uint8_t Self_Check_Flag;//自检标志
+extern uint8_t KEY_LOCK_Flag;
+extern uint8_t KEY_LOCK_Timer1S;
+extern uint8_t KEYDoor_Flag,HMDoor_Flag;
+extern uint8_t SendKEY_TCQ_Flag;
+extern uint8_t Key_Value,Key_Flag;
+
+extern uint8_t SD_Loop_Flag;
+extern uint8_t Alarm_Loop_Flag;
+extern uint8_t Fault_Loop_Flag;
+extern uint8_t Cursor;
+extern uint16_t Query_Alarm_Num,Query_Fault_Num;
+
+extern uint8_t  RecPCCnt;
+extern uint8_t RecPC_Begin_Flag;
+extern uint8_t ReceiveFromPC_Flag;
+extern uint8_t PCFunction_Flag;
+//extern uint8_t Re_SendTCQ_Addr,Re_TDH;
+extern uint8_t SendPC_Buff[100],RecPC_Buff[100];
+
+
+extern uint8_t Send_Buff[20],Rec_Buff[100];
+extern uint8_t Buff[100];
+extern uint8_t RecCnt,Rec_Begin_Flag;
+extern uint8_t Rec_Flag;
+
+
+extern uint8_t KEY_RecCnt,KEY_Rec_Begin_Flag;
+extern uint8_t KEY_Uart_Err_Timer;
+extern uint8_t KEY_Return_Timer;
+extern uint8_t uart_cnt;
+//extern uint8_t TCQ_Return_OK; //探测器返回正确标志
+
+extern uint8_t Rec_Begin_Flag;
+extern uint8_t canbuf[8];
+
+extern uint8_t PCQueryT;
+extern uint8_t PB_Flag;
+
+
+extern uint8_t GC_Name[22];
+//extern uint8_t Door[256][24];//
+//extern uint8_t DoorFault[512];//门故障
+extern uint8_t SendKEY_Buff[20],RecKEY_Buff[20];
+extern uint16_t Fault_Position[24];
+extern uint16_t Alarm_Position[11];
+extern uint16_t Alarm_Data[11];
+extern uint8_t PageNum;
+extern uint8_t ZD_Test;
+extern uint8_t FreshFlag;
+extern uint8_t Print_State;//打印机配置状态
+
+extern uint8_t TCQ_Return_Length;
+extern uint8_t TCQ_Return_Timer;
+extern uint8_t TCQ_Return_OK;
+
+extern uint8_t TCQ_485Return_Length;
+extern uint8_t TCQ_485Return_Timer;
+extern uint8_t TCQ_485Return_OK;
+extern uint8_t Display_Flag;
+extern uint16_t InstallAddr;
+
+extern uint8_t ShowFrq;//刷新频率，每屏显示的时间间隔
+
+extern CanRxMsg CanRecData[8];
+extern CanTxMsg CanSendData[8];
+extern u8 rs485buf[20];
+
+extern void Delay1us(uint32_t nus);
+extern void Delay1ms(uint16_t nms) ;
+extern void Delay1s(u16 ns);
+
+extern void GPIO_Confing(void);
+extern void RCC_Configuration(void) ;
+extern void TIM3_Config(void);
+extern void NVIC_Config(void);
+extern void RTC_config(void);
+extern void DMA_Config(void);
+extern void  ADC_Config(void);
+extern void IWDG_Configuration(void);
+extern void CAN_Config(void);
+
+extern void UART1Init(void);
+extern void UART2Init(void);
+extern void UART3Init(void);
+extern void UART4Init(void);
+extern uint16_t CRC_16(uint8_t *dat,uint8_t lenth);//dat[]为接收校验数组的首地址，lenth进行校验数组的长度
+extern void SendToPC(void);
+extern void CAN_SendData(void);
+extern u8 Can_Receive_Msg(u8 *buf);
+extern void SendData(unsigned char dat);
+extern void Eeprom_Init(void);
+extern uint8_t RW24XX(uint8_t *DataBuff,uint8_t ByteQuantity,uint32_t Address,uint8_t ControlByte);//,enum eepromtype EepromType)
+extern uint8_t RW24XX_1(uint8_t *DataBuff,uint8_t ByteQuantity,uint32_t Address,uint8_t ControlByte);//,enum eepromtype EepromType)
+
+extern void Save_Fault_Record(uint16_t tcID,uint8_t type);
+extern void Device_Init(void);
+extern void Data_Init(void);
+extern void System_Init(void);
+extern void Set_RTC(T_Struct time);
+extern void Read_RTC(void);
+extern void Power_ADC_Return(void);
+//extern uint8_t Check_Shield_State_1(uint16_t Num);//屏蔽后返回0　否则返回1
+//extern uint8_t Check_Fault_State_1(uint16_t Num);
+//extern void Set_Fault_Flag_1(uint16_t Num,uint8_t flag);
+//extern void Set_Alarm_Flag_1(uint16_t Num,uint8_t flag);
+extern uint8_t Check_World_Flag_State(uint8_t nbit);
+
+extern void Check_Fault_Alarm(void);
+extern void Check_Feel_Alarm(void);
+extern void Display_Alarm(uint16_t Num);
+extern void Display_Fault(uint16_t Num);
+extern void Sum_Shield(void);
+extern void Set_World_Flag_Flag(uint8_t Num,uint8_t flag);
+extern void Set_Shield_Flag(uint16_t Num,uint8_t flag);//将屏蔽标志置1或清0
+extern uint8_t Check_Shield_State(uint16_t Num);//屏蔽后返回1　否则返回0
+extern uint8_t Check_Fault_State(uint16_t Num);
+extern void Add_Uart_Fault_Timer(unsigned int Num,unsigned char m);//故障次数加1
+extern uint8_t Uart_Fault_Timer(uint16_t Num);//计算故障次数
+extern uint8_t Check_Alarm_State(uint16_t Num);//报警返回1
+extern void Save_Event_Record(uint8_t type);
+
+extern void Set_Uart_Fault_Timer0(unsigned int Num);//将故障清0
+extern void Set_Fault_Flag(unsigned int Num,unsigned char  flag);
+extern void Set_Alarm_Flag(unsigned int Num,unsigned char flag);
+
+extern void Display_LowPower(void);
+extern void Dis_State_LED_ON(void);//状态指示灯全亮
+extern void Dis_State_LED_OFF(void);
+extern void Key_Scan(void);
+extern void Dis_State_LED(void);
+extern void Line_X(unsigned char x,unsigned char y, unsigned char x1);
+extern void Line_Y(unsigned char x,unsigned char y, unsigned char y1);
+extern void LCD_CmdWrite(unsigned char dat);//8080
+extern void LCD_DataWrite(unsigned char dat);
+extern void Soft_RST(void);
+extern void Open_Cur(unsigned char x,unsigned char y);
+extern void Close_Cur(void);
+extern void lcd_inital(void);
+extern void Clr_Display(void);
+extern void Display_S(unsigned char *Str,unsigned int length);
+extern void GotoXY(unsigned char x,unsigned char y,unsigned char TP);
+extern void SD_Display_60S(unsigned char TNum);//上电显示
+extern void Display_Main_Face(void);
+extern void Display_Feel_Fault(void);
+extern void Display_Fault(void);
+extern void Display_Feel(void);
+extern void Display_System_Sate(void);
+extern void Display_System_Timer(void);
+extern void Dis_Pass1_Promt(void);
+extern void Dis_Pass(void);
+extern void Self_Check(void);
+extern void Dis_Err(void);
+extern void Dis_Main_Menu(void);
+extern void Dis_Main_Menu1(void);
+extern void Dis_PB_Bar(void);
+extern void Dis_PB_Text(void);
+extern void Dis_PB_Bar1(void);
+extern void Dis_PB_Text1(void);
+extern void Dis_PB_Bar2(void);
+extern void Dis_PB_Text2(void);
+extern void Dis_SystemP_Bar(void);
+extern void Dis_SystemP_Text1(void);
+
+extern void Dis_Loop_Bar(void);			//回路板功能设置
+extern void Dis_Loop_Text1(void);
+
+extern void Dis_Addr_Bar(void);
+extern void Dis_Addr_Text1(void);
+
+extern void Dis_SetPOK(void);
+extern void Dis_SetPErr(void);
+extern void Dis_TCQ_State_Bar1(void);
+extern void Dis_TCQ_State_Text1(void);
+extern void Read_Error(void);
+extern void Clear_Read_State(void);
+extern void Dis_485_State_Return(void);
+extern void Dis_TCQ_State_Return(void);
+extern void Dis_LD_Bar(void);
+extern void Dis_LD_Text(void);
+extern void Dis_Test_Fl_Bar1(void);
+extern void Dis_Test_Fl_Text1(void);
+extern void Clear_Read_Fl(void);
+extern void Dis_Test_Fl_Return(void);
+extern void Dis_Set_System_Timer_Promt(void);
+extern void Dis_Set_System_Timer(void);
+extern void Dis_OK(void);
+extern void Dis_ShowFrq_Bar(void);
+extern void Dis_ShowFrq_Text1(void);
+extern void Dis_Err1(void);
+extern void Dis_SetAddr_Bar(void);
+extern void Dis_SetAddr_Text1(void);
+extern void Dis_Pass2_Promt(void);
+extern void Dis_Main_Menu2(void);
+extern void Display_Fault_Record_Bar(void);
+extern void Display_Fault_Record(unsigned int FaultNum);
+
+extern void Dis_No_Record(void);
+extern void Dis_Query_Menu(void);
+extern void Dis_Query_Menu1(void);
+extern void Display_Alarm_Record_Bar(void);
+extern void Display_Alarm_Record(unsigned int AlarmNum);
+extern void Display_SD_Record_Bar(void);
+extern void Display_SD_Record(unsigned char SDNum);
+extern void Dis_SetPass1_Promt(void);
+extern void Dis_SetPass(void);
+extern void Dis_SetPass2_Promt(void);
+extern void Key_Control(void);
+extern void Clear_REC_Sure(void);
+extern void Clear_REC_Promt(void);
+extern void Clear_REC_OK(void);
+extern void CLR_Record(void);
+//extern void Key_Main(void);
+//extern void Page_Main(void);
+extern void LED_Rev(void);;
+extern void Key_Test(void);
+extern void CanCmdPro(void);
+extern void PC485DataPro(void);
+extern void RS485DataPro(void);
+extern void RS485SendWork(u8 id);
+extern void CanSendWork(void);
+extern void TCQ_Data_Control(void);
+extern void Read_TCQ_Data(void);
+extern void Power_Check(void);
+extern void Bat_Power_Check(void);
+extern u8 Can_Send_Msg(uint16_t id,u8* msg,u8 len);
+extern void Begin_Print(uint16_t Num,uint8_t *Mg,uint8_t *Dt);
+extern void Set_Sensor_Fault0_Flag(uint8_t Num,uint8_t nbit,uint8_t flag);
+extern uint8_t Check_Sensor_Fault0_State(uint8_t Num,uint8_t nbit);//故障返回1;
+extern void Save_Alarm_Record(uint8_t TCQ_ID,uint16_t Alarm_State,uint16_t type);
+extern void Plase_Check(void);
+extern uint8_t Type_State,PB_State,SKC_State;
+extern uint16_t Low_Feel[20],Feel[20];
+extern uint8_t testled;
+extern void  SendToPC1(uint8_t Command,uint8_t TCQ_Num,uint8_t TDH,uint8_t type);
+
+extern void RS485_Send_Data(u8 *buf,u8 len);
+//extern uint8_t rr[100];
+//extern uint8_t rr_cnt;
+#endif
